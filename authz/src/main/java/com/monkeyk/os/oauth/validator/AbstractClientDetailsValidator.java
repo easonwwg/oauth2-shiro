@@ -37,6 +37,10 @@ public abstract class AbstractClientDetailsValidator {
     }
 
 
+    /**
+     * 获取授权app的信息
+     * @return
+     */
     protected ClientDetails clientDetails() {
         if (clientDetails == null) {
             clientDetails = oauthService.loadClientDetails(oauthRequest.getClientId());

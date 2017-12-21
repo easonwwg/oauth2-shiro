@@ -37,5 +37,6 @@ public class MkkJdbcRealm extends JdbcRealm implements InitializingBean {
         setAuthenticationQuery(AUTHENTICATION_QUERY);
         setUserRolesQuery(USER_ROLES_QUERY);
         setPermissionsQuery(PERMISSIONS_QUERY);
+
     }
 }

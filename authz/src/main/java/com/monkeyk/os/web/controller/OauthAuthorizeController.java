@@ -36,10 +36,10 @@ public class OauthAuthorizeController {
      * Must handle the grant_type as follow:
      * grant_type="authorization_code" -> response_type="code"
      * ?response_type=code&scope=read,write&client_id=[client_id]&redirect_uri=[redirect_uri]&state=[state]
-     * <p/>
+     * <p>
      * grant_type="implicit"   -> response_type="token"
      * ?response_type=token&scope=read,write&client_id=[client_id]&client_secret=[client_secret]&redirect_uri=[redirect_uri]
-     * <p/>
+     * <p>
      *
      * @param request  HttpServletRequest
      * @param response HttpServletResponse
@@ -48,10 +48,12 @@ public class OauthAuthorizeController {
     public void authorize(HttpServletRequest request, HttpServletResponse response) throws OAuthSystemException, ServletException, IOException {
 
         try {
+            //创建oauth授权请求
             OAuthAuthxRequest oauthRequest = new OAuthAuthxRequest(request);
 
-
+            //判断是否为授权码请求
             if (oauthRequest.isCode()) {
+                //创建授权码处理类对象
                 CodeAuthorizeHandler codeAuthorizeHandler = new CodeAuthorizeHandler(oauthRequest, response);
                 LOG.debug("Go to  response_type = 'code' handler: {}", codeAuthorizeHandler);
                 codeAuthorizeHandler.handle();

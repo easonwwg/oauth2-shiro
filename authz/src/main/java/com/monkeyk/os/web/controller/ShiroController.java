@@ -25,19 +25,29 @@ public class ShiroController {
     private static final Logger LOG = LoggerFactory.getLogger(ShiroController.class);
 
 
+    /**
+     * 首页
+     * @return
+     */
     @RequestMapping("index")
     public String index() {
         return "index";
     }
 
+    /**
+     * 为授权页面
+     * @return
+     */
     @RequestMapping("unauthorized")
     public String unauthorized() {
         return "unauthorized";
     }
 
 
-    /*
-     * Go login page
+    /**
+     * 未登陆的请求定向到这个页面
+     * @param model
+     * @return
      */
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String login(Model model) {
@@ -46,6 +56,12 @@ public class ShiroController {
         return "login";
     }
 
+    /**
+     * 登陆认证
+     * @param formDto
+     * @param errors
+     * @return
+     */
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public String login(@ModelAttribute("formDto") LoginDto formDto, BindingResult errors) {
 
@@ -53,6 +69,7 @@ public class ShiroController {
         token.setRememberMe(false);
 
         try {
+            //登陆认证
             SecurityUtils.getSubject().login(token);
         } catch (Exception e) {
             LOG.debug("Error authenticating.", e);

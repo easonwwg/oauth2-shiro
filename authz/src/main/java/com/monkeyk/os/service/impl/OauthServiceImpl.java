@@ -31,12 +31,23 @@ public class OauthServiceImpl implements OauthService {
     @Autowired
     private OAuthIssuer oAuthIssuer;
 
+    /**
+     * 获取client的详细信息
+     * @param clientId
+     * @return
+     */
     @Override
     public ClientDetails loadClientDetails(String clientId) {
         LOG.debug("Load ClientDetails by clientId: {}", clientId);
         return oauthRepository.findClientDetails(clientId);
     }
 
+    /**
+     * 保存code到数据库
+     * @param authCode
+     * @param clientDetails
+     * @return
+     */
     @Override
     public OauthCode saveAuthorizationCode(String authCode, ClientDetails clientDetails) {
         final String username = currentUsername();
@@ -49,10 +60,20 @@ public class OauthServiceImpl implements OauthService {
         return oauthCode;
     }
 
+    /**
+     * 获取当前用户
+     * @return
+     */
     private String currentUsername() {
         return (String) SecurityUtils.getSubject().getPrincipal();
     }
 
+    /**
+     * 创建code
+     * @param clientDetails
+     * @return
+     * @throws OAuthSystemException
+     */
     @Override
     public String retrieveAuthCode(ClientDetails clientDetails) throws OAuthSystemException {
         final String clientId = clientDetails.getClientId();
@@ -71,6 +92,14 @@ public class OauthServiceImpl implements OauthService {
     }
 
 
+    /**
+     * 保存token
+     * @param clientDetails
+     * @param scopes
+     * @param includeRefreshToken
+     * @return
+     * @throws OAuthSystemException
+     */
     @Override
     public AccessToken retrieveAccessToken(ClientDetails clientDetails, Set<String> scopes, boolean includeRefreshToken) throws OAuthSystemException {
         String scope = OAuthUtils.encodeScopes(scopes);
@@ -87,6 +116,7 @@ public class OauthServiceImpl implements OauthService {
 
         return accessToken;
     }
+
 
     //Always return new AccessToken, exclude refreshToken
     @Override

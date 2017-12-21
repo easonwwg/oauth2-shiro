@@ -18,7 +18,7 @@ import java.io.IOException;
  * 2015/6/25
  * <p/>
  * Handle response_type = 'code'
- *
+ *授权码code模式的处理类
  * @author Shengzhao Li
  */
 public class CodeAuthorizeHandler extends AbstractAuthorizeHandler {
@@ -40,8 +40,9 @@ public class CodeAuthorizeHandler extends AbstractAuthorizeHandler {
     @Override
     protected void handleResponse() throws OAuthSystemException, IOException {
         final ClientDetails clientDetails = clientDetails();
+        //获取code
         final String authCode = oauthService.retrieveAuthCode(clientDetails);
-
+        //创建oauth2Responese对象
         final OAuthResponse oAuthResponse = OAuthASResponse
                 .authorizationResponse(oauthRequest.request(), HttpServletResponse.SC_OK)
                 .location(clientDetails.getRedirectUri())

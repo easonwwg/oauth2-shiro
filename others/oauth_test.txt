@@ -46,7 +46,7 @@ Test-Page URL: http://localhost:8080/authz/resources/oauth_test.html
 
 
 -- Test resource
-http://localhost:8080/rs/rs/username?access_token=6b7b0726e603cd04c797d5b28c7be4c4
+http://localhost:8080/rs/rs/username?access_token=b6a7a5b3cac9268b8597bba5536f558a
 
 
 --

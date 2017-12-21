@@ -133,6 +133,7 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
             //go to login
             LOG.debug("Forward to Oauth login by client_id '{}'", oauthRequest.getClientId());
             final HttpServletRequest request = oauthRequest.request();
+            //跳转到授权登陆页面
             request.getRequestDispatcher(OAUTH_LOGIN_VIEW)
                     .forward(request, response);
             return true;
@@ -141,11 +142,18 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
     }
 
 
+    /**
+     *
+     * @return 返回false是登陆
+     * @throws ServletException
+     * @throws IOException
+     */
     //true is login failed, false is successful
     protected boolean submitLogin() throws ServletException, IOException {
         if (isSubmitLogin()) {
             //login flow
             try {
+                //验证form表单
                 UsernamePasswordToken token = createUsernamePasswordToken();
                 SecurityUtils.getSubject().login(token);
 
@@ -182,32 +190,34 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
     }
 
     public void handle() throws OAuthSystemException, ServletException, IOException {
-        //validate
+        ////验证请求是否合法，主要是针对参数做基本的校验，重定向链接，客户端ID授权范围等这些信息与注册的是否相同。
         if (validateFailed()) {
             return;
         }
 
-        //Check need usr login
+        ////判断用户是否登录过，shiro会进行判断根据session判断。因此多个应用使用同一个授权服务的话，是可以直接跳过登录步骤的也就实现了单点登录的效果。
+        //如果没有登录的话，这一步的请求会被重定向至登录页面。（登录也得隐藏域会带上这些参数）
         if (goLogin()) {
             return;
         }
 
-        //submit login
+        ////这个请求如果是从登录页面提交过来的，那么就提交用户的登录，这个框架中交给shiro去做登录相关的操作。
         if (submitLogin()) {
             return;
         }
 
-        // Check approval
+        // // 本系统中把登录和授权放在两个步骤中完成，有点像新浪微博的方式，
+        // QQ是一步完成授权。用户未授权则跳转授权页面
         if (goApproval()) {
             return;
         }
 
-        //Submit approval
+        ////与登录类似，也是提交用户批准或拒绝了权限请求
         if (submitApproval()) {
             return;
         }
 
-        //handle response
+        ////以上任意一步没有通过都是授权失败会进行相应处理，如果都通过了就发放Code码
         handleResponse();
     }
 
