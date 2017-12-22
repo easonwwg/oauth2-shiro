@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 2016/6/9
- *
+ * 客户端细节保存类
  * @author Shengzhao Li
  */
 public class ClientDetailsFormSaver {
