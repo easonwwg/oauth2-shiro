@@ -15,8 +15,9 @@ import java.util.Set;
 
 /**
  * 15-6-13
- * <p/>
+ * <p>
  * 对各类 grant_type 的请求进行验证的公共类
+ * 对不同的grant_type的请求进行验证抽象类
  * 将通用的行为(方法) 位于此
  *
  * @author Shengzhao Li
@@ -25,13 +26,26 @@ public abstract class AbstractClientDetailsValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractClientDetailsValidator.class);
 
-
+    /**
+     * oauth2服务接口
+     */
     protected OauthService oauthService = BeanProvider.getBean(OauthService.class);
 
+    /**
+     * 封装的oauth2Request请求对象
+     */
     protected OAuthRequest oauthRequest;
 
+    /**
+     * 封装的oauth2客户端对象
+     */
     private ClientDetails clientDetails;
 
+    /**
+     * 构造函数
+     *
+     * @param oauthRequest
+     */
     protected AbstractClientDetailsValidator(OAuthRequest oauthRequest) {
         this.oauthRequest = oauthRequest;
     }
@@ -39,6 +53,7 @@ public abstract class AbstractClientDetailsValidator {
 
     /**
      * 获取授权app的信息
+     *
      * @return
      */
     protected ClientDetails clientDetails() {
@@ -49,6 +64,11 @@ public abstract class AbstractClientDetailsValidator {
     }
 
 
+    /**
+     * 无效的app
+     * @return
+     * @throws OAuthSystemException
+     */
     protected OAuthResponse invalidClientErrorResponse() throws OAuthSystemException {
         return OAuthResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
                 .setError(OAuthError.TokenResponse.INVALID_CLIENT)
@@ -56,6 +76,11 @@ public abstract class AbstractClientDetailsValidator {
                 .buildJSONMessage();
     }
 
+    /**
+     * 无效的RedirectUrl
+     * @return
+     * @throws OAuthSystemException
+     */
     protected OAuthResponse invalidRedirectUriResponse() throws OAuthSystemException {
         return OAuthResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                 .setError(OAuthError.CodeResponse.INVALID_REQUEST)
@@ -63,6 +88,11 @@ public abstract class AbstractClientDetailsValidator {
                 .buildJSONMessage();
     }
 
+    /**
+     * 无效的授权范围（scope）
+     * @return
+     * @throws OAuthSystemException
+     */
     protected OAuthResponse invalidScopeResponse() throws OAuthSystemException {
         return OAuthResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
                 .setError(OAuthError.CodeResponse.INVALID_SCOPE)
@@ -71,6 +101,24 @@ public abstract class AbstractClientDetailsValidator {
     }
 
 
+    /**
+     * 无效的app secret
+     * @return
+     * @throws OAuthSystemException
+     */
+    protected OAuthResponse invalidClientSecretResponse() throws OAuthSystemException {
+        return OAuthResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
+                .setError(OAuthError.TokenResponse.UNAUTHORIZED_CLIENT)
+                .setErrorDescription("Invalid client_secret by client_id '" + oauthRequest.getClientId() + "'")
+                .buildJSONMessage();
+    }
+
+
+    /**
+     * 验证客户端
+     * @return
+     * @throws OAuthSystemException
+     */
     public final OAuthResponse validate() throws OAuthSystemException {
         final ClientDetails details = clientDetails();
         if (details == null) {
@@ -81,8 +129,15 @@ public abstract class AbstractClientDetailsValidator {
     }
 
 
+    /**
+     * 排除指定的scope
+     * @param scopes
+     * @param clientDetails
+     * @return
+     */
     protected boolean excludeScopes(Set<String> scopes, ClientDetails clientDetails) {
-        final String clientDetailsScope = clientDetails.scope();          //read write
+        //read write
+        final String clientDetailsScope = clientDetails.scope();
         for (String scope : scopes) {
             if (!clientDetailsScope.contains(scope)) {
                 LOG.debug("Invalid scope - ClientDetails scopes '{}' exclude '{}'", clientDetailsScope, scope);
@@ -92,14 +147,11 @@ public abstract class AbstractClientDetailsValidator {
         return false;
     }
 
-
-    protected OAuthResponse invalidClientSecretResponse() throws OAuthSystemException {
-        return OAuthResponse.errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                .setError(OAuthError.TokenResponse.UNAUTHORIZED_CLIENT)
-                .setErrorDescription("Invalid client_secret by client_id '" + oauthRequest.getClientId() + "'")
-                .buildJSONMessage();
-    }
-
-
+    /**
+     * 抽象的方法 验证客户端请求的合法性
+     * @param clientDetails
+     * @return
+     * @throws OAuthSystemException
+     */
     protected abstract OAuthResponse validateSelf(ClientDetails clientDetails) throws OAuthSystemException;
 }

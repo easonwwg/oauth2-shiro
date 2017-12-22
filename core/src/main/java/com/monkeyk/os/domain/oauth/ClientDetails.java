@@ -9,10 +9,11 @@ import java.util.Date;
 
 /**
  * 15-6-12
- * <p/>
+ * <p>
  * DBTable: oauth_client_details
- * <p/>
+ * <p>
  * 定义OAuth2 的客户端(client details)
+ * 封装的oauth2客户端对象
  *
  * @author Shengzhao Li
  */
