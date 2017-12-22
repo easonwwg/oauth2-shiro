@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * 2016/6/3
- *
+ * 用户的角色和权限的接口仓储
  * @author Shengzhao Li
  */
 

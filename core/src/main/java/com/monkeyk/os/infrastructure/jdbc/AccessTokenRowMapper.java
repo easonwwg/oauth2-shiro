@@ -8,11 +8,10 @@ import java.sql.SQLException;
 
 /**
  * 15-6-20
- *
+ * Token实体映射 Mapper
  * @author Shengzhao Li
  */
 public class AccessTokenRowMapper implements RowMapper<AccessToken> {
-
 
     public AccessTokenRowMapper() {
     }

@@ -1,12 +1,10 @@
 package com.monkeyk.os.domain.users;
 
-import com.monkeyk.os.domain.shared.Repository;
-
 import java.util.List;
 
 /**
  * 2016/6/3
- *
+ * 用户服务的仓储
  * @author Shengzhao Li
  */
 

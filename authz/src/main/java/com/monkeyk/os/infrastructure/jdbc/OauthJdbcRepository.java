@@ -14,18 +14,28 @@ import java.util.List;
 
 /**
  * 15-6-13
- * <p/>
- * OAUTH 的JDBC 操作实现
+ * <p>
+ * OAUTH 相关的JDBC 操作实现
+ * oauth2 操作数据库的服务的实现类
  *
  * @author Shengzhao Li
  */
 @Repository("oauthJdbcRepository")
 public class OauthJdbcRepository extends AbstractJdbcRepository implements OauthRepository {
 
-
+    /**
+     * 客户端实体映射
+     */
     private static ClientDetailsRowMapper clientDetailsRowMapper = new ClientDetailsRowMapper();
+
+    /**
+     * Oauth2 code实体映射
+     */
     private static OauthCodeRowMapper oauthCodeRowMapper = new OauthCodeRowMapper();
 
+    /**
+     * Token实体映射
+     */
     private static AccessTokenRowMapper accessTokenRowMapper = new AccessTokenRowMapper();
 
 

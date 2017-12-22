@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public abstract class AbstractJdbcRepository implements Repository {
 
-
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 

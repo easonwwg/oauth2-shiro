@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 2016/3/25
- * <p/>
+ * <p>
  * 账号密码的加密 处理类
  * 使用MD5
  *
@@ -20,7 +20,11 @@ public abstract class PasswordHandler {
     private PasswordHandler() {
     }
 
-
+    /**
+     * md5加密
+     * @param password
+     * @return
+     */
     public static String md5(String password) {
 
         MessageDigest digest;
@@ -29,7 +33,6 @@ public abstract class PasswordHandler {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("MD5 algorithm not available.  Fatal (should be in the JDK).");
         }
-
         try {
             byte[] bytes = digest.digest(password.getBytes("UTF-8"));
             return String.format("%032x", new BigInteger(1, bytes));

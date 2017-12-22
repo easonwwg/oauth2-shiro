@@ -23,7 +23,14 @@ import java.util.List;
 public class UsersJdbcAuthzRepository extends AbstractJdbcRepository implements UsersAuthzRepository {
 
 
+    /**
+     * 用户角色实体Mapper
+     */
     private static UsersRowMapper usersRowMapper = new UsersRowMapper();
+
+    /**
+     * 用户实体Mapper
+     */
     private static RolesRowMapper rolesRowMapper = new RolesRowMapper();
 
 

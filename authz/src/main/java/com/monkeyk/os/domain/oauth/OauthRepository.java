@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * 15-6-13
+ * oauth2操作数据库的仓储
  *
  * @author Shengzhao Li
  */
@@ -30,7 +31,6 @@ public interface OauthRepository extends Repository {
     int saveAccessToken(AccessToken accessToken);
 
     AccessToken findAccessTokenByRefreshToken(String refreshToken, String clientId);
-
 
     List<ClientDetails> findClientDetailsListByClientId(String clientId);
 }

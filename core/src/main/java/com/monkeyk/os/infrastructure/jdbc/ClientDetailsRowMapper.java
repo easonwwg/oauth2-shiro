@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 /**
  * 15-6-13
- *
+ *客户端实体映射Mapper
  * @author Shengzhao Li
  */
 public class ClientDetailsRowMapper implements RowMapper<ClientDetails> {

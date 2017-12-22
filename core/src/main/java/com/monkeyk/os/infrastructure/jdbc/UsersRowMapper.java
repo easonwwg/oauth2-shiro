@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 /**
  * 2016/6/3
- *
+ *用户实体Mapper
  * @author Shengzhao Li
  */
 public class UsersRowMapper implements RowMapper<Users> {

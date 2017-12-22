@@ -14,8 +14,9 @@ import java.util.Map;
 
 /**
  * 15-6-20
- * <p/>
+ * <p>
  * AuthenticationId 的生成器
+ * 认证id生成器id
  * MD5加密
  *
  * @author Shengzhao Li
@@ -28,6 +29,12 @@ public class DefaultAuthenticationIdGenerator implements AuthenticationIdGenerat
     }
 
 
+    /**
+     * @param clientId 客户端id
+     * @param username 用户名
+     * @param scope    授权的范围
+     * @return
+     */
     public String generate(String clientId, String username, String scope) {
         Map<String, String> map = new HashMap<>();
         map.put(OAuth.OAUTH_CLIENT_ID, clientId);
@@ -38,11 +45,16 @@ public class DefaultAuthenticationIdGenerator implements AuthenticationIdGenerat
         if (!OAuthUtils.isEmpty(scope)) {
             map.put(OAuth.OAUTH_SCOPE, scope);
         }
-
         return digest(map);
     }
 
 
+    /**
+     * md5加密
+     *
+     * @param map
+     * @return
+     */
     protected String digest(Map<String, String> map) {
         MessageDigest digest;
         try {
