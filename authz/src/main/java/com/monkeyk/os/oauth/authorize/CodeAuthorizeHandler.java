@@ -16,9 +16,10 @@ import java.io.IOException;
 
 /**
  * 2015/6/25
- * <p/>
+ * <p>
  * Handle response_type = 'code'
- *授权码code模式的处理类
+ * 授权码code模式的处理类
+ *
  * @author Shengzhao Li
  */
 public class CodeAuthorizeHandler extends AbstractAuthorizeHandler {
@@ -30,13 +31,21 @@ public class CodeAuthorizeHandler extends AbstractAuthorizeHandler {
         super(oauthRequest, response);
     }
 
+    /**
+     * 返回授权码方式验证器
+     * @return
+     */
     @Override
     protected AbstractClientDetailsValidator getValidator() {
         return new CodeClientDetailsValidator(oauthRequest);
     }
 
 
-    //response code
+    /**
+     * 放行 处理Response
+     * @throws OAuthSystemException
+     * @throws IOException
+     */
     @Override
     protected void handleResponse() throws OAuthSystemException, IOException {
         final ClientDetails clientDetails = clientDetails();
@@ -49,7 +58,6 @@ public class CodeAuthorizeHandler extends AbstractAuthorizeHandler {
                 .setCode(authCode)
                 .buildQueryMessage();
         LOG.debug(" 'code' response: {}", oAuthResponse);
-
         WebUtils.writeOAuthQueryResponse(response, oAuthResponse);
     }
 

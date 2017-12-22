@@ -1,9 +1,9 @@
 package com.monkeyk.os.oauth.authorize;
 
-import com.monkeyk.os.web.WebUtils;
 import com.monkeyk.os.oauth.OAuthAuthxRequest;
 import com.monkeyk.os.oauth.OAuthHandler;
 import com.monkeyk.os.oauth.validator.AbstractClientDetailsValidator;
+import com.monkeyk.os.web.WebUtils;
 import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.error.OAuthError;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
@@ -32,7 +32,14 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractAuthorizeHandler.class);
 
 
+    /**
+     * 封装的oauth2Request对象
+     */
     protected OAuthAuthxRequest oauthRequest;
+
+    /**
+     * httpRequest对象
+     */
     protected HttpServletResponse response;
 
     protected boolean userFirstLogged = false;
@@ -44,17 +51,27 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         this.response = response;
     }
 
-
-    protected boolean validateFailed() throws OAuthSystemException {
-        AbstractClientDetailsValidator validator = getValidator();
-        LOG.debug("Use [{}] validate client: {}", validator, oauthRequest.getClientId());
-
-        final OAuthResponse oAuthResponse = validator.validate();
-        return checkAndResponseValidateFailed(oAuthResponse);
-    }
-
+    /**
+     * 客户端请求验证器
+     *
+     * @return
+     */
     protected abstract AbstractClientDetailsValidator getValidator();
 
+    /**
+     * 抽象的自定义返回内容
+     * @throws OAuthSystemException
+     * @throws IOException
+     */
+    protected abstract void handleResponse() throws OAuthSystemException, IOException;
+
+    //region validateFailed()验证请求的合法
+    /**
+     * 返回respponse验证
+     *
+     * @param oAuthResponse
+     * @return
+     */
     protected boolean checkAndResponseValidateFailed(OAuthResponse oAuthResponse) {
         if (oAuthResponse != null) {
             LOG.debug("Validate OAuthAuthzRequest(client_id={}) failed", oauthRequest.getClientId());
@@ -64,20 +81,40 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         return false;
     }
 
+    /**
+     * 获取请求的clientId
+     *
+     * @return
+     */
     protected String clientId() {
         return oauthRequest.getClientId();
     }
 
-    protected boolean isUserAuthenticated() {
-        final Subject subject = SecurityUtils.getSubject();
-        return subject.isAuthenticated();
+    /**
+     * 验证请求是否合法，主要是针对参数做基本的校验，
+     * 重定向链接，客户端ID授权范围等这些信息与注册的是否相同
+     *
+     * @return
+     * @throws OAuthSystemException
+     */
+    protected boolean validateFailed() throws OAuthSystemException {
+        //客户端验证
+        AbstractClientDetailsValidator validator = getValidator();
+        LOG.debug("Use [{}] validate client: {}", validator, oauthRequest.getClientId());
+        final OAuthResponse oAuthResponse = validator.validate();
+        return checkAndResponseValidateFailed(oAuthResponse);
     }
-
-    protected boolean isNeedUserLogin() {
-        return !isUserAuthenticated() && !isPost();
-    }
+    //endregion
 
 
+    //region goApproval() 用户授权的认证
+    /**
+     * 如果授权了 返回false放行
+     * 如果未授权，返回true，并且跳转找授权页面
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
     protected boolean goApproval() throws ServletException, IOException {
         if (userFirstLogged && !clientDetails().trusted()) {
             //go to approval
@@ -89,8 +126,16 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         }
         return false;
     }
+    //endregion
 
-    //true is submit failed, otherwise return false
+    //region submitApproval() 用户同意授权与否的验证
+    /**
+     * 登录类似，也是提交用户批准或拒绝了权限请求
+     * true is submit failed, otherwise return false
+     * @return
+     * @throws IOException
+     * @throws OAuthSystemException
+     */
     protected boolean submitApproval() throws IOException, OAuthSystemException {
         if (isPost() && !clientDetails().trusted()) {
             //submit approval
@@ -109,6 +154,11 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         return false;
     }
 
+    /**
+     * 用户拒绝授权的回掉
+     * @throws IOException
+     * @throws OAuthSystemException
+     */
     protected void responseApprovalDeny() throws IOException, OAuthSystemException {
 
         final OAuthResponse oAuthResponse = OAuthASResponse.errorResponse(HttpServletResponse.SC_FOUND)
@@ -126,8 +176,38 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         subject.logout();
         LOG.debug("After 'ACCESS_DENIED' call logout. user: {}", subject.getPrincipal());
     }
+    //endregion
 
 
+    //region goLogin()判断用户是否登录过
+
+    /**
+     * 用户是否认证
+     *
+     * @return
+     */
+    protected boolean isUserAuthenticated() {
+        final Subject subject = SecurityUtils.getSubject();
+        return subject.isAuthenticated();
+    }
+
+    /**
+     * 用户是否需要登陆的验证
+     *
+     * @return
+     */
+    protected boolean isNeedUserLogin() {
+        return !isUserAuthenticated() && !isPost();
+    }
+
+
+    /**
+     * 是否需要登陆的验证
+     *
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
     protected boolean goLogin() throws ServletException, IOException {
         if (isNeedUserLogin()) {
             //go to login
@@ -140,15 +220,23 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         }
         return false;
     }
+    //endregion
 
+
+    //region submitLogin() 这个请求如果是从登录页面提交过来的那么就提交用户的登录，这个框架中交给shiro去做登录相关的操作
+    /**
+     * true，让用户登陆，false表示登陆成功直接下一步处理
+     * @return
+     */
+    private boolean isSubmitLogin() {
+        return !isUserAuthenticated() && isPost();
+    }
 
     /**
-     *
-     * @return 返回false是登陆
+     * @return 返回false是登陆成功，true为登陆失败
      * @throws ServletException
      * @throws IOException
      */
-    //true is login failed, false is successful
     protected boolean submitLogin() throws ServletException, IOException {
         if (isSubmitLogin()) {
             //login flow
@@ -156,7 +244,6 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
                 //验证form表单
                 UsernamePasswordToken token = createUsernamePasswordToken();
                 SecurityUtils.getSubject().login(token);
-
                 LOG.debug("Submit login successful");
                 this.userFirstLogged = true;
                 return false;
@@ -174,6 +261,11 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         return false;
     }
 
+    /**
+     * 创建UserNamePasswordToken对象，根据用户穿入的username和password
+     *
+     * @return
+     */
     private UsernamePasswordToken createUsernamePasswordToken() {
         final HttpServletRequest request = oauthRequest.request();
         final String username = request.getParameter(REQUEST_USERNAME);
@@ -181,14 +273,22 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         return new UsernamePasswordToken(username, password);
     }
 
-    private boolean isSubmitLogin() {
-        return !isUserAuthenticated() && isPost();
-    }
-
+    /**
+     * 是否为post请求的封装
+     * @return
+     */
     protected boolean isPost() {
         return RequestMethod.POST.name().equalsIgnoreCase(oauthRequest.request().getMethod());
     }
+    //endregion
 
+
+    /**
+     * 验证处理的请求
+     * @throws OAuthSystemException
+     * @throws ServletException
+     * @throws IOException
+     */
     public void handle() throws OAuthSystemException, ServletException, IOException {
         ////验证请求是否合法，主要是针对参数做基本的校验，重定向链接，客户端ID授权范围等这些信息与注册的是否相同。
         if (validateFailed()) {
@@ -221,6 +321,4 @@ public abstract class AbstractAuthorizeHandler extends OAuthHandler {
         handleResponse();
     }
 
-    //Handle custom response content
-    protected abstract void handleResponse() throws OAuthSystemException, IOException;
 }

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2015/7/3
- * <p/>
+ * <p>
  * 对OAUTH各种流程的操作进行抽象,
  * 将没用的行为(方法) 放于此
  *
@@ -32,6 +32,11 @@ public abstract class OAuthHandler {
     private ClientDetails clientDetails;
 
 
+    /**
+     * 根据客户端id获取客户端的详细信息
+     *
+     * @return
+     */
     protected ClientDetails clientDetails() {
         if (clientDetails == null) {
             final String clientId = clientId();
@@ -44,6 +49,7 @@ public abstract class OAuthHandler {
 
     /**
      * Create  AccessToken response
+     * 创建token对象
      *
      * @param accessToken AccessToken
      * @param queryOrJson True is QueryMessage, false is JSON message
@@ -69,6 +75,11 @@ public abstract class OAuthHandler {
     }
 
 
+    /**
+     * 获取客户端的id
+     *
+     * @return
+     */
     protected abstract String clientId();
 
 }
