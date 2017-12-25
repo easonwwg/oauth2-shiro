@@ -20,6 +20,12 @@ public abstract class WebUtils {
     }
 
 
+    /**
+     * 对response对象写oauth2认证的数据
+     *
+     * @param response
+     * @param oAuthResponse
+     */
     public static void writeOAuthJsonResponse(HttpServletResponse response, OAuthResponse oAuthResponse) {
 
         final int responseStatus = oAuthResponse.getResponseStatus();

@@ -28,7 +28,6 @@ public abstract class OAuthHandler {
 
     protected transient OauthService oauthService = BeanProvider.getBean(OauthService.class);
 
-
     private ClientDetails clientDetails;
 
 

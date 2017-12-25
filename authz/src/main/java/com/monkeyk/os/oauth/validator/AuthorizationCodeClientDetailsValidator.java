@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2015/7/3
- *
+ * 验证code
  * @author Shengzhao Li
  */
 public class AuthorizationCodeClientDetailsValidator extends AbstractOauthTokenValidator {
@@ -42,14 +42,14 @@ public class AuthorizationCodeClientDetailsValidator extends AbstractOauthTokenV
     @Override
     protected OAuthResponse validateSelf(ClientDetails clientDetails) throws OAuthSystemException {
 
-        //validate grant_type
+        //验证 grant_type
         final String grantType = grantType();
         if (!clientDetails.grantTypes().contains(grantType)) {
             LOG.debug("Invalid grant_type '{}', client_id = '{}'", grantType, clientDetails.getClientId());
             return invalidGrantTypeResponse(grantType);
         }
 
-        //validate client_secret
+        //验证 client_secret
         final String clientSecret = oauthRequest.getClientSecret();
         if (clientSecret == null || !clientSecret.equals(clientDetails.getClientSecret())) {
             LOG.debug("Invalid client_secret '{}', client_id = '{}'", clientSecret, clientDetails.getClientId());
@@ -57,14 +57,14 @@ public class AuthorizationCodeClientDetailsValidator extends AbstractOauthTokenV
         }
 
 
-        //validate redirect_uri
+        //验证 redirect_uri
         final String redirectURI = oauthRequest.getRedirectURI();
         if (redirectURI == null || !redirectURI.equals(clientDetails.getRedirectUri())) {
             LOG.debug("Invalid redirect_uri '{}', client_id = '{}'", redirectURI, clientDetails.getClientId());
             return invalidRedirectUriResponse();
         }
 
-        //validate code
+        //验证 code
         String code = getCode();
         OauthCode oauthCode = oauthService.loadOauthCode(code, clientDetails());
         if (oauthCode == null) {

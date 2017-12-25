@@ -38,17 +38,32 @@ public class OAuthTokenHandleDispatcher {
     public OAuthTokenHandleDispatcher(OAuthTokenxRequest tokenRequest, HttpServletResponse response) {
         this.tokenRequest = tokenRequest;
         this.response = response;
-
+        //初始化token相关的处理器
         initialHandlers();
     }
 
+    /**
+     * 初始化token相关的处理器
+     */
     private void initialHandlers() {
+        /**
+         * 授权码模式
+         */
         handlers.add(new AuthorizationCodeTokenHandler());
+        /**
+         * 密码模式
+         */
         handlers.add(new PasswordTokenHandler());
+        /**
+         * refreshToken
+         * 如果用户访问的时候，客户端的"访问令牌"已经过期，则需要使用"更新令牌"申请一个新的访问令牌。
+         */
         handlers.add(new RefreshTokenHandler());
 
+        /**
+         * 客户端模式
+         */
         handlers.add(new ClientCredentialsTokenHandler());
-
         LOG.debug("Initialed '{}' OAuthTokenHandler(s): {}", handlers.size(), handlers);
     }
 

@@ -8,9 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 2015/7/3
- * <p/>
+ * <p>
  * Ext  OAuthTokenRequest
- *封装的oauth2TokenRequest对象
+ * 封装的oauth2TokenRequest对象
+ *
  * @author Shengzhao Li
  */
 public class OAuthTokenxRequest extends OAuthTokenRequest {

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2015/7/3
- *
+ * 抽象的类 封装oauth2Token处理的类
  * @author Shengzhao Li
  */
 public abstract class AbstractOAuthTokenHandler extends OAuthHandler implements OAuthTokenHandler {
@@ -45,20 +45,27 @@ public abstract class AbstractOAuthTokenHandler extends OAuthHandler implements 
         if (validateFailed()) {
             return;
         }
-
-
         handleAfterValidation();
     }
 
 
+    /**
+     * 通用方法 是否验证失败
+     * @return
+     * @throws OAuthSystemException
+     */
     protected boolean validateFailed() throws OAuthSystemException {
         AbstractClientDetailsValidator validator = getValidator();
         LOG.debug("Use [{}] validate client: {}", validator, tokenRequest.getClientId());
-
         final OAuthResponse oAuthResponse = validator.validate();
         return checkAndResponseValidateFailed(oAuthResponse);
     }
 
+    /**
+     *如果验证失败，oAuthResponse返回不为null，返回异常页面
+     * @param oAuthResponse
+     * @return
+     */
     protected boolean checkAndResponseValidateFailed(OAuthResponse oAuthResponse) {
         if (oAuthResponse != null) {
             LOG.debug("Validate OAuthAuthzRequest(client_id={}) failed", tokenRequest.getClientId());
@@ -68,13 +75,25 @@ public abstract class AbstractOAuthTokenHandler extends OAuthHandler implements 
         return false;
     }
 
+    /**
+     * 待子类实现的方法 获取各种验证器
+     * @return
+     */
     protected abstract AbstractClientDetailsValidator getValidator();
 
-
+    /**
+     * 通用方法 获取clientID
+     * @return
+     */
     protected String clientId() {
         return tokenRequest.getClientId();
     }
 
+    /**
+     * 封装处理器验证之后的操作
+     * @throws OAuthProblemException
+     * @throws OAuthSystemException
+     */
     protected abstract void handleAfterValidation() throws OAuthProblemException, OAuthSystemException;
 
 

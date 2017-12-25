@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2015/7/3
+ * oauth2token接口
  *
  * @author Shengzhao Li
  */

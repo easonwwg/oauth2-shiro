@@ -40,8 +40,8 @@ public class OauthTokenController {
     @RequestMapping("token")
     public void authorize(HttpServletRequest request, HttpServletResponse response) throws OAuthSystemException {
         try {
+            //转为oauth2TokenRequest对象
             OAuthTokenxRequest tokenRequest = new OAuthTokenxRequest(request);
-
             OAuthTokenHandleDispatcher tokenHandleDispatcher = new OAuthTokenHandleDispatcher(tokenRequest, response);
             tokenHandleDispatcher.dispatch();
 

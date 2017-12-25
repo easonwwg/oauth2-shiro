@@ -119,6 +119,14 @@ public class OauthServiceImpl implements OauthService {
 
 
     //Always return new AccessToken, exclude refreshToken
+
+    /**
+     * 返回一个token对象
+     * @param clientDetails 客户端的信息
+     * @param scopes 范围
+     * @return
+     * @throws OAuthSystemException
+     */
     @Override
     public AccessToken retrieveNewAccessToken(ClientDetails clientDetails, Set<String> scopes) throws OAuthSystemException {
         String scope = OAuthUtils.encodeScopes(scopes);
@@ -151,6 +159,13 @@ public class OauthServiceImpl implements OauthService {
         return rows > 0;
     }
 
+    /**
+     * 根据code和客户端的信息返回一个token
+     * @param clientDetails 客户端信息
+     * @param code code
+     * @return
+     * @throws OAuthSystemException
+     */
     //Always return new AccessToken
     @Override
     public AccessToken retrieveAuthorizationCodeAccessToken(ClientDetails clientDetails, String code) throws OAuthSystemException {
@@ -159,12 +174,13 @@ public class OauthServiceImpl implements OauthService {
         final String clientId = clientDetails.getClientId();
 
         final String authenticationId = authenticationIdGenerator.generate(clientId, username, null);
-
+        //如果找到已经有的token就删除
         AccessToken accessToken = oauthRepository.findAccessToken(clientId, username, authenticationId);
         if (accessToken != null) {
             LOG.debug("Delete existed AccessToken: {}", accessToken);
             oauthRepository.deleteAccessToken(accessToken);
         }
+        //创建token对象
         accessToken = createAndSaveAccessToken(clientDetails, clientDetails.supportRefreshToken(), username, authenticationId);
         LOG.debug("Create a new AccessToken: {}", accessToken);
 
