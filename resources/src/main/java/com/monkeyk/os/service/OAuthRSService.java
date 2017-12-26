@@ -22,8 +22,19 @@ import com.monkeyk.os.domain.oauth.ClientDetails;
 
 public interface OAuthRSService {
 
+    /**
+     * 根据tokenid获取token的详细信息
+     * @param tokenId
+     * @return
+     */
     AccessToken loadAccessTokenByTokenId(String tokenId);
 
+    /**
+     * 根据客户端id和resourceIds获取客户端的详细信息
+     * @param clientId
+     * @param resourceIds
+     * @return
+     */
     ClientDetails loadClientDetails(String clientId, String resourceIds);
 
 }

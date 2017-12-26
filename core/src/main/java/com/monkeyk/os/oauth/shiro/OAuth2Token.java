@@ -4,27 +4,21 @@ import org.apache.shiro.authc.RememberMeAuthenticationToken;
 
 /**
  * 2015/9/29
+ * 实现 AuthenticationToken （RememberMeAuthenticationToken继承RememberMeAuthenticationToken）
  *
  * @author Shengzhao Li
  */
 public class OAuth2Token implements RememberMeAuthenticationToken {
 
-
     private static final long serialVersionUID = 8587854556973099598L;
 
-
-    // the service access_token
     private String accessToken;
 
-    // the user identifier, username
     private String userId;
 
-    // is the user in a remember me mode ?
     private boolean rememberMe = false;
 
-
     private String resourceId;
-
 
     public OAuth2Token(String accessToken, String resourceId) {
         this.accessToken = accessToken;

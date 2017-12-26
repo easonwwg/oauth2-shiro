@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * 2015/9/29
- * <p/>
+ * <p>
  * Ext. {@link org.apache.shiro.realm.jdbc.JdbcRealm}
  *
  * @author Shengzhao Li
@@ -59,12 +59,17 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
         }
     }
 
+    /**
+     * 认证
+     *
+     * @param token
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     public AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-
         OAuth2Token upToken = (OAuth2Token) token;
         final String accessToken = (String) upToken.getCredentials();
-
         if (StringUtils.isEmpty(accessToken)) {
             throw new OAuth2AuthenticationException("Invalid access_token: " + accessToken);
         }
@@ -86,7 +91,12 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
         return new SimpleAuthenticationInfo(username, accessToken, getName());
     }
 
-
+    /**
+     * 授权
+     *
+     * @param principals
+     * @return
+     */
     @Override
     public AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 

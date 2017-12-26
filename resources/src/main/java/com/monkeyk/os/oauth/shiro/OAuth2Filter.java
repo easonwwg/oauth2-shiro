@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 2015/9/29
- * <p/>
+ * <p>
  * 对需要保护的资源进行拦截过滤处理
  * 需要与SHIRO的安全整合并加入到SHIRO 流程中
  * 相关配置见 rs-security.xml 文件
@@ -33,33 +33,49 @@ public class OAuth2Filter extends AuthenticatingFilter implements InitializingBe
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Filter.class);
-
-
+    /**
+     * 这个resourceId是注入的
+     */
     private String resourceId;
     private OAuthRSService rsService;
 
 
+    /**
+     * 重写token对象
+     * 创建token对象
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-
+        //获取tokenid
         final String accessToken = getAccessToken(httpRequest);
+        //根据tokenid获取Token的详细信息
         final AccessToken token = rsService.loadAccessTokenByTokenId(accessToken);
-
+        //用户名
         String username = null;
         if (token != null) {
             LOGGER.debug("Set username and clientId from AccessToken: {}", token);
             username = token.username();
+            //用户名给request对象
             httpRequest.setAttribute(OAuth.OAUTH_CLIENT_ID, token.clientId());
         } else {
             LOGGER.debug("Not found AccessToken by access_token: {}", accessToken);
         }
-
+        //OAuth2Token  实现了AuthenticationToken
         return new OAuth2Token(accessToken, resourceId)
                 .setUserId(username);
     }
 
+    /**
+     * 获取客户端的tokenId
+     * @param httpRequest
+     * @return
+     */
     private String getAccessToken(HttpServletRequest httpRequest) {
         final String authorization = httpRequest.getHeader("Authorization");
         if (authorization != null) {
