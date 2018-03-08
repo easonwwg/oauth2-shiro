@@ -8,7 +8,7 @@ import java.security.Principal;
 
 /**
  * 2015/7/8
- *
+ * 实现oauth2接口OAuthDecision
  * @author Shengzhao Li
  */
 public class MkkOAuthDecision implements OAuthDecision {
@@ -16,8 +16,14 @@ public class MkkOAuthDecision implements OAuthDecision {
 
     private boolean authorized;
 
+    /**
+     * 凭证
+     */
     private Principal principal;
 
+    /**
+     * 客户端对象
+     */
     private RSOAuthClient oAuthClient;
 
     public MkkOAuthDecision() {

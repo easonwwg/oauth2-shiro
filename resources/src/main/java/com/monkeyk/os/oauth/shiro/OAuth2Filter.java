@@ -34,13 +34,18 @@ public class OAuth2Filter extends AuthenticatingFilter implements InitializingBe
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Filter.class);
     /**
-     * 这个resourceId是注入的
+     * 这个resourceId是注入的 是区分客户端
      */
     private String resourceId;
+
+    /**
+     * 注入的
+     */
     private OAuthRSService rsService;
 
 
     /**
+     * 认证
      * 重写token对象
      * 创建token对象
      * @param request

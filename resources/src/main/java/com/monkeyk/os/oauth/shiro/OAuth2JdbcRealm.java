@@ -41,6 +41,13 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
     }
 
 
+    /**
+     * 验证token是否正确
+     *
+     * @param token
+     * @param accessToken
+     * @throws OAuth2AuthenticationException
+     */
     private void validateToken(String token, AccessToken accessToken) throws OAuth2AuthenticationException {
         if (accessToken == null) {
             LOG.debug("Invalid access_token: {}, because it is null", token);
@@ -52,6 +59,14 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
         }
     }
 
+    /**
+     * 验证客户端是否有效
+     *
+     * @param token
+     * @param accessToken
+     * @param clientDetails
+     * @throws OAuth2AuthenticationException
+     */
     private void validateClientDetails(String token, AccessToken accessToken, ClientDetails clientDetails) throws OAuth2AuthenticationException {
         if (clientDetails == null || clientDetails.archived()) {
             LOG.debug("Invalid ClientDetails: {} by client_id: {}, it is null or archived", clientDetails, accessToken.clientId());
@@ -61,6 +76,7 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
 
     /**
      * 认证
+     * 根据token查找是否有此用户
      *
      * @param token
      * @return
@@ -80,7 +96,7 @@ public class OAuth2JdbcRealm extends MkkJdbcRealm {
         //Validate client details by resource-id
         final ClientDetails clientDetails = rsService.loadClientDetails(aToken.clientId(), upToken.getResourceId());
         validateClientDetails(accessToken, aToken, clientDetails);
-
+        //用户名根据token可以查找咋代表认证成功
         String username = aToken.username();
 
         // Null username is invalid

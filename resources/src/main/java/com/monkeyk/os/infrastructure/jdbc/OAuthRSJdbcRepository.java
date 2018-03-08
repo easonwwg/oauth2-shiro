@@ -21,6 +21,11 @@ public class OAuthRSJdbcRepository extends AbstractJdbcRepository implements OAu
     private static AccessTokenRowMapper accessTokenRowMapper = new AccessTokenRowMapper();
 
 
+    /**
+     * 工具tokenid获取token的具体的信息
+     * @param tokenId
+     * @return
+     */
     @Override
     public AccessToken findAccessTokenByTokenId(String tokenId) {
         final String sql = " select * from oauth_access_token where token_id = ?";
@@ -28,6 +33,12 @@ public class OAuthRSJdbcRepository extends AbstractJdbcRepository implements OAu
         return list.isEmpty() ? null : list.get(0);
     }
 
+    /**
+     * 根据客户端id和资源id类型获取客户端的信息
+     * @param clientId
+     * @param resourceIds
+     * @return
+     */
     @Override
     public ClientDetails findClientDetailsByClientIdAndResourceIds(String clientId, String resourceIds) {
         final String sql = " select * from oauth_client_details where archived = 0 and client_id = ? and resource_ids = ? ";

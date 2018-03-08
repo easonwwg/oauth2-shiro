@@ -28,6 +28,10 @@ public class MkkCharacterEncodingFilter extends CharacterEncodingFilter {
 
     }
 
+    /**
+     * 保存ip
+     * @param request
+     */
     private void persistIp(HttpServletRequest request) {
         final String clientIp = WebUtils.retrieveClientIp(request);
         ThreadLocalHolder.clientIp(clientIp);
