@@ -8,7 +8,7 @@ import org.apache.oltu.oauth2.rsfilter.OAuthClient;
  * <p/>
  * Wrapper ClientDetails
  * implement OAuthClient
- *
+ *  实现oauht2接口OAuthClient
  * @author Shengzhao Li
  * @see com.monkeyk.os.domain.oauth.ClientDetails
  */
